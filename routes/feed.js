@@ -1,8 +1,14 @@
-const express = require("express")
-const router = express.Router()
+const express = require("express");
+const router = express.Router();
 
-const feedController = require("../contorllers/feed")
+const feedController = require("../contorllers/feed");
 
-router.get("/posts", feedController.getPosts)
+// GET /posts
+// desc Get list of posts
+router.get("/posts", feedController.getPosts);
 
-module.exports = router
+// POST /post
+// desc Create a post
+router.post("/post", feedController.postPost);
+
+module.exports = router;
