@@ -111,10 +111,9 @@ class Feed extends Component {
     if (this.state.editPost) {
       url = "URL";
     }
-
     fetch(url, {
       method: method,
-      header: {
+      headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
@@ -129,7 +128,6 @@ class Feed extends Component {
         return res.json();
       })
       .then(resData => {
-        console.log(resData);
         const post = {
           _id: resData.post._id,
           title: resData.post.title,
@@ -137,6 +135,7 @@ class Feed extends Component {
           creator: resData.post.creator,
           createdAt: resData.post.createdAt
         };
+        console.log(post);
         this.setState(prevState => {
           let updatedPosts = [...prevState.posts];
           if (prevState.editPost) {
