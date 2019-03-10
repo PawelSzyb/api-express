@@ -1,11 +1,40 @@
 const express = require("express");
-const app = express();
 const bodyParser = require("body-parser");
+const path = require("path");
+const multer = require("multer");
+const uuidv4 = require("uuid/v4");
 
-const mongoURI = require("./config/keys").mongoURI
-const mongoose = require("mongoose")
+const mongoURI = require("./config/keys").mongoURI;
+const mongoose = require("mongoose");
+
+const app = express();
+
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, uuidv4() + "-" + file.originalname);
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
 
 app.use(bodyParser.json());
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
+);
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -21,10 +50,21 @@ const feedRoutes = require("./routes/feed");
 
 app.use("/feed", feedRoutes);
 
-mongoose.connect(mongoURI, {
+app.use((error, req, res, next) => {
+  console.log(error);
+  const statusCode = error.statusCode || 500;
+  const message = error.message;
+  res.status(statusCode).json({
+    message: message
+  });
+});
+
+mongoose
+  .connect(mongoURI, {
     useNewUrlParser: true
   })
-  .then((res) => console.log("MongoDB connected"))
-  .then((err) => console.log(err))
-
-app.listen(8080, console.log("Server started at port 8080"));
+  .then(res => console.log("MongoDB connected"))
+  .then(res => {
+    app.listen(8080, console.log("Server started at port 8080"));
+  })
+  .catch(err => console.log(err));
