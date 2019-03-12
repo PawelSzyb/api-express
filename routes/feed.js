@@ -50,4 +50,8 @@ router.put(
   feedController.updatePost
 );
 
+// DELETE /post/:post_id
+// desc delete single post
+router.delete("/post/:post_id", feedController.deletePost);
+
 module.exports = router;
