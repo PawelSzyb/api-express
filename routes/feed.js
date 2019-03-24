@@ -12,8 +12,8 @@ router.get("/posts", isAuthenticated, feedController.getPosts);
 // POST /post
 // desc Create a post
 router.post(
-  isAuthenticated,
   "/post",
+  isAuthenticated,
   [
     body("title")
       .trim()

@@ -9,7 +9,6 @@ module.exports = (req, res, next) => {
     throw error;
   }
   const token = authHeader.split(" ")[1];
-  console.log(token);
   let decodedToken;
   try {
     decodedToken = jwt.verify(token, secret);
@@ -22,6 +21,6 @@ module.exports = (req, res, next) => {
     error.statusCode = 401;
     throw error;
   }
-  req.user_id = decodedToken.userId;
+  req.user_id = decodedToken.user_id;
   next();
 };

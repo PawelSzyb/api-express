@@ -1,8 +1,10 @@
-const Post = require("../models/Post");
 const fs = require("fs");
 const path = require("path");
 
 const { validationResult } = require("express-validator/check");
+
+const Post = require("../models/Post");
+const User = require("../models/User");
 
 exports.getPosts = (req, res, next) => {
   const currentPage = req.query.page || 1;
@@ -41,21 +43,31 @@ exports.postPost = (req, res, next) => {
     error.statusCode = 422;
     throw error;
   }
+
+  let creator;
+
   const newPost = {
     title: req.body.title,
     content: req.body.content,
     imageUrl: req.file.path.replace("\\", "/"),
-    creator: {
-      name: "Paweł"
-    }
+    creator: req.user_id
   };
   const post = new Post(newPost);
   post
     .save()
-    .then(newPost => {
+    .then(res => {
+      return User.findById(req.user_id);
+    })
+    .then(user => {
+      creator = user;
+      user.posts.push(post);
+      return user.save();
+    })
+    .then(result => {
       res.status(201).json({
         message: "Resource created",
-        post: newPost
+        post: post,
+        creator: { _id: creator._id, name: creator.name }
       });
     })
     .catch(err => {
