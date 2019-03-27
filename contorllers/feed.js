@@ -47,7 +47,7 @@ exports.postPost = (req, res, next) => {
   let creator;
 
   const newPost = {
-    title: req.body.title,
+    title: req.body.title, 
     content: req.body.content,
     imageUrl: req.file.path.replace("\\", "/"),
     creator: req.user_id
