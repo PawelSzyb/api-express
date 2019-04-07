@@ -47,7 +47,7 @@ exports.postPost = (req, res, next) => {
   let creator;
 
   const newPost = {
-    title: req.body.title, 
+    title: req.body.title,
     content: req.body.content,
     imageUrl: req.file.path.replace("\\", "/"),
     creator: req.user_id
@@ -169,5 +169,37 @@ exports.deletePost = (req, res, next) => {
         error.statusCode = 500;
       }
       next(error);
+    });
+};
+
+exports.getStatus = (req, res, next) => {
+  User.findById(req.user_id)
+    .then(user => {
+      if (!user) {
+        const error = new Error("User not found");
+        error.statusCode = 401;
+        throw error;
+      }
+      res.status(200).json({ status: user.status });
+    })
+    .catch(error => {
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      next(error);
+    });
+};
+
+exports.putStatus = (req, res, next) => {
+  const newStatus = req.body.status;
+  User.findOneAndUpdate({ _id: req.user_id }, { $set: { status: newStatus } })
+    .then(result => {
+      res.status(200).json({ msg: "Status updated" });
+    })
+    .catch(error => {
+      if (!error.statusCode) {
+        error.statusCode = 500;
+        next(error);
+      }
     });
 };

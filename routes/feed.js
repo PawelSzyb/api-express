@@ -57,4 +57,12 @@ router.put(
 // desc delete single post
 router.delete("/post/:post_id", isAuthenticated, feedController.deletePost);
 
+// get /post/status
+// desc get user status
+router.get("/status", isAuthenticated, feedController.getStatus);
+
+// post /post/status/new
+// desc update status
+router.post("/status/new", isAuthenticated, feedController.putStatus);
+
 module.exports = router;
